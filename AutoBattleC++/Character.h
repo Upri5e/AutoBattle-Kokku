@@ -2,6 +2,8 @@
 #include "Grid.h"
 #include "Character.h"
 #include "Types.h"
+#include <memory>
+#include <Vector>
 
 class Character
 {
@@ -18,27 +20,30 @@ public:
     int PlayerIndex;
     //public Character Target{ get; set; }
 
-    Character* target;
 
     bool IsDead;
     char Icon;
 
-    Types::GridBox currentBox;
+    std::shared_ptr<Types::GridBox> currentBox;
 
     bool TakeDamage(float amount);
 
-    int getIndex(vector<Types::GridBox*> v, int index);
+    int getIndex(std::vector<Types::GridBox*> v, int index);
 
     void Die();
 
     void WalkTo(bool CanWalk);
 
-    void StartTurn(Grid*& battlefield);
+    void StartTurn(std::shared_ptr<Grid> battlefield);
 
-    bool CheckCloseTargets(Grid* battlefield);
+    bool CheckCloseTargets(std::shared_ptr<Grid> battlefield);
 
-    void Attack(Character target);
+    void Attack(std::shared_ptr<Character> target);
 
+    void SetTarget(const std::shared_ptr<Character>& target);
+
+private:
+    std::shared_ptr<Character> target; //Change to shared ptr to avoid memory leak
 
 };
 

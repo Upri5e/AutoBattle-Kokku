@@ -4,20 +4,20 @@
 #include <list>
 #include <iostream>
 #include "Grid.h"
-using namespace std;
+
 class BattleField
 {
 public:
 
 	BattleField();
 
-	Grid* grid;
-	Types::GridBox* PlayerCurrentLocation;
-	Types::GridBox* EnemyCurrentLocation;
-	list<Character>* AllPlayers;
-	shared_ptr<Character> PlayerCharacter;
+	std::shared_ptr<Grid> grid;
+	//std::shared_ptr<Types::GridBox> PlayerCurrentLocation;
+	//std::shared_ptr<Types::GridBox> EnemyCurrentLocation;
+	std::list<std::shared_ptr<Character>> AllPlayers; //We are using shared ptr now for all characters
+	std::shared_ptr<Character> PlayerCharacter;
 	//Character* PlayerCharacter;
-	shared_ptr<Character>* EnemyCharacter;
+	std::shared_ptr<Character> EnemyCharacter; //Declaring shared ptr does not need *
 	int currentTurn;
 	int numberOfPossibleTiles;
 

@@ -1,6 +1,6 @@
 #include "Grid.h"
 #include "Types.h"
-
+#include <memory>
 
 Grid::Grid(int Lines, int Columns)
 {
@@ -12,8 +12,8 @@ Grid::Grid(int Lines, int Columns)
 
         for (int j = 0; j < Columns; j++)
         {
-            Types::GridBox* newBox = new Types::GridBox(i, j, false, (Columns * i + j));
-            grids.insert(grids.end(), newBox);
+            auto newBox = std::make_shared<Types::GridBox>(i, j, false, (Columns * i + j)); //Change to a unique ptr to avoid memory leak 
+            grids.push_back(std::move(newBox)); // use emplace_back to append the new element
             //Console.Write($"{newBox.Index}\n");
         }
     }
@@ -31,7 +31,8 @@ void Grid::drawBattlefield(int Lines, int Columns)
     {
         for (int j = 0; j < Columns; j++)
         {
-            Types::GridBox* currentgrid = new Types::GridBox();
+            //Fix This
+            Types::GridBox* currentgrid = new Types::GridBox(0, 0, false, 0);
             if (currentgrid->ocupied)
             {
                 //if()

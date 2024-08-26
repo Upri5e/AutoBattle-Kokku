@@ -1,7 +1,7 @@
 #pragma once
 #include <Vector>
 #include "Types.h"
-
+#include <memory>
 class Grid
 {
 
@@ -10,7 +10,7 @@ public:
     Grid(int Lines, int Columns);
     ~Grid();
 
-    std::vector<Types::GridBox> grids;
+    std::vector<std::shared_ptr<Types::GridBox>> grids;
 
     int xLenght;
     int yLength;
