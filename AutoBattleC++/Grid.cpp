@@ -9,7 +9,6 @@ Grid::Grid(int Lines, int Columns)
     //Console.WriteLine("The battle field has been created\n");
     for (int i = 0; i < Lines; i++)
     {
-
         for (int j = 0; j < Columns; j++)
         {
             auto newBox = std::make_shared<Types::GridBox>(i, j, false, (Columns * i + j)); //Change to a unique ptr to avoid memory leak 
@@ -25,17 +24,21 @@ Grid::~Grid()
 
 }
 
+void Grid::drawBattlefield()
+{
+    drawBattlefield(xLenght, yLength);
+}
+
 void Grid::drawBattlefield(int Lines, int Columns)
 {
     for (int i = 0; i < Lines; i++)
     {
         for (int j = 0; j < Columns; j++)
         {
-            //Fix This
-            Types::GridBox* currentgrid = new Types::GridBox(0, 0, false, 0);
+            //Loop through the grids and check if occupied
+            std::shared_ptr<Types::GridBox> currentgrid = grids[Columns * i + j];
             if (currentgrid->ocupied)
             {
-                //if()
                 printf("[X]\t");
             }
             else
