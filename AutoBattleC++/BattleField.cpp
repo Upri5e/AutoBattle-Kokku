@@ -11,16 +11,46 @@
 
 BattleField::BattleField() {
 
-	grid = std::make_shared<Grid>(5, 5);
 	//AllPlayers = new list<Character>(); No need to initialize
 	currentTurn = 0;
-	numberOfPossibleTiles = grid->grids.size();
+	numberOfPossibleTiles = 0;
 	//Setup();
 }
 
 void BattleField::Setup()
 {
+	int width, height = 0;
+	while (true)
+	{
+		printf("Enter the battlefield width:\n");
 
+		std::cin >> width;
+		if (std::cin.fail() || width <= 0)
+		{
+			//Clear cin error flag
+			std::cin.clear();
+			//Ignore rest of invalid input
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			printf("Invalid input. Please enter a number greater than 0.\n");
+			continue;
+		}
+
+		printf("Enter the battlefield height:\n");
+		std::cin >> height;
+		if (std::cin.fail() || height <= 0)
+		{
+			//Clear cin error flag
+			std::cin.clear();
+			//Ignore rest of invalid input
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			printf("Invalid input. Please enter a number greater than 0.\n");
+			continue;
+		}
+		grid = std::make_shared<Grid>(width, height);
+		numberOfPossibleTiles = grid->grids.size();
+		break;
+	}
+	printf("Battlefield of %d X %d created\n", width, height);
 	GetPlayerChoice();
 }
 
@@ -31,31 +61,22 @@ void BattleField::GetPlayerChoice()
 	{
 		//asks for the player to choose between four possible classes via console.
 		printf("Choose Between One of these Classes:\n");
-
+		//TODO: Make more dynamic if we added different classes in the future
 		printf("[1] Paladin, [2] Warrior, [3] Cleric, [4] Archer\n");
 
-		choice = 0;
-		//std::getline(std::cin, choice);
 		std::cin >> choice;
-		if (std::cin.fail())
+		if (std::cin.fail() || choice < 1 || choice > 4)
 		{
 			//Clear cin error flag
 			std::cin.clear();
 			//Ignore rest of invalid input
 			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 			printf("Invalid input. Please enter a number between 1 and 4.\n");
+			continue;
 		}
-		else
-		{
-			if (choice >= 1 && choice <= 4)
-			{
-				CreatePlayerCharacter(choice);
-				return;
-			}
-			else {
-				printf("%d is not a valid choice!\n", choice);
-			}
-		}
+
+		CreatePlayerCharacter(choice);
+		return;
 	}
 }
 
@@ -97,7 +118,7 @@ void BattleField::StartGame()
 	AllPlayers.push_back(PlayerCharacter);
 	AllPlayers.push_back(EnemyCharacter);
 	AlocatePlayers();
-	StartTurn();
+	//StartTurn();
 }
 
 void BattleField::StartTurn() {
@@ -171,6 +192,7 @@ void BattleField::AlocatePlayerCharacter()
 		//Types::GridBox* PlayerCurrentLocation = RandomLocation;
 		RandomLocation->ocupied = true;
 		PlayerCharacter->currentBox = RandomLocation;
+		printf("Player grid location: X= %d, Y= %d\n", RandomLocation->xIndex, RandomLocation->yIndex);
 		AlocateEnemyCharacter();
 	}
 	else
@@ -182,16 +204,17 @@ void BattleField::AlocatePlayerCharacter()
 void BattleField::AlocateEnemyCharacter()
 {
 
-	int random = 24;
+	int random = GetRandomInt(0, grid->grids.size() - 1);
 	auto l_front = grid->grids.begin();
-	advance(l_front, random);
+	std::advance(l_front, random);
 	std::shared_ptr<Types::GridBox> RandomLocation = *l_front;
 
 	if (!RandomLocation->ocupied)
 	{
 		RandomLocation->ocupied = true;
 		EnemyCharacter->currentBox = RandomLocation;
-		grid->drawBattlefield(5, 5);
+		printf("Enemy grid location: X= %d, Y= %d\n", RandomLocation->xIndex, RandomLocation->yIndex);
+		//grid->drawBattlefield(5, 5);
 	}
 	else
 	{
