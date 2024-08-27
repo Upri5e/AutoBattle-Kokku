@@ -2,10 +2,11 @@
 //
 #include "BattleField.h"
 #include <iostream>
+#include <memory>
 
 int main()
 {
-    BattleField* battleField = new(BattleField);
+    std::unique_ptr<BattleField> battleField = std::make_unique<BattleField>();
     battleField->Setup();
 }
 
