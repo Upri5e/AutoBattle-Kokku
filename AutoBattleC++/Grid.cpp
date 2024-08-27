@@ -26,17 +26,12 @@ Grid::~Grid()
 
 void Grid::drawBattlefield()
 {
-    drawBattlefield(xLenght, yLength);
-}
-
-void Grid::drawBattlefield(int Lines, int Columns)
-{
-    for (int i = 0; i < Lines; i++)
+    for (int i = 0; i < xLenght; i++)
     {
-        for (int j = 0; j < Columns; j++)
+        for (int j = 0; j < yLength; j++)
         {
             //Loop through the grids and check if occupied
-            std::shared_ptr<Types::GridBox> currentgrid = grids[Columns * i + j];
+            std::shared_ptr<Types::GridBox> currentgrid = grids[yLength * i + j];
             if (currentgrid->ocupied)
             {
                 printf("[X]\t");

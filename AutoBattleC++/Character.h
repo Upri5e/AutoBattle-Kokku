@@ -9,7 +9,7 @@ class Character
 {
 public:
 
-    Character(Types::CharacterClass charcaterClass);
+    Character(Types::CharacterClass charcaterClass, int index);
     ~Character();
 
     
@@ -36,7 +36,7 @@ public:
 
     void StartTurn(std::shared_ptr<Grid> battlefield);
 
-    bool CheckCloseTargets(std::shared_ptr<Grid> battlefield);
+    bool CheckCloseTargets(std::shared_ptr<Grid> battlefield, int range);
 
     void Attack(std::shared_ptr<Character> target);
 

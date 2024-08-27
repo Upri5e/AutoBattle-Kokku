@@ -43,6 +43,8 @@ public:
 	void AlocatePlayerCharacter();
 
 	void AlocateEnemyCharacter();
+
+	void EndGame();
 };
 
 

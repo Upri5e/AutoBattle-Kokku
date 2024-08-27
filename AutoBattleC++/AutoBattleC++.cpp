@@ -6,8 +6,8 @@
 
 int main()
 {
-    std::unique_ptr<BattleField> battleField = std::make_unique<BattleField>();
-    battleField->Setup();
+    BattleField battleField = BattleField();
+    battleField.Setup();
 }
 
 
