@@ -16,6 +16,7 @@ public:
     float Health;
     float BaseDamage;
     float DamageMultiplier;
+    float AttackRange;
     //public GridBox currentBox;
     int PlayerIndex;
     //public Character Target{ get; set; }
@@ -28,15 +29,15 @@ public:
 
     bool TakeDamage(float amount);
 
-    int getIndex(std::vector<Types::GridBox*> v, int index);
+    //int getIndex(std::vector<Types::GridBox*> v, int index);
 
     void Die();
 
-    void WalkTo(bool CanWalk);
+    //void WalkTo(bool CanWalk);
 
-    void StartTurn(std::shared_ptr<Grid> battlefield);
+    void StartTurn(std::shared_ptr<Grid> battlefieldGrid);
 
-    bool CheckCloseTargets(std::shared_ptr<Grid> battlefield, int range);
+    bool CheckCloseTargets(std::shared_ptr<Grid> battlefieldGrid, int range);
 
     void Attack(std::shared_ptr<Character> target);
 

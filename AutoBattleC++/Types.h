@@ -6,12 +6,17 @@ public:
 
     struct GridBox
     {
+    private:
+        bool ocupied;
+
+    public:
+        char icon;
         int xIndex;
         int yIndex;
-        bool ocupied;
         int Index;
 
-        GridBox() : xIndex(0), yIndex(0), ocupied(false), Index(0) //Default Cstr        
+
+        GridBox() : xIndex(0), yIndex(0), ocupied(false), Index(0), icon(' ') //Default Cstr        
         {
 
         }
@@ -22,6 +27,16 @@ public:
             yIndex = y;
             this->ocupied = ocupied; //Use this to make sure we are setting the structs variable as the value of the param
             Index = index;
+            icon = ' ';
+        }
+
+        void SetOccupy(bool status, char icon)
+        {
+            ocupied = status;
+            this->icon = icon;
+        }
+        bool GetOccupied() {
+            return ocupied;
         }
     };
 

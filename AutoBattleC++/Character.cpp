@@ -6,7 +6,8 @@
 
 //using namespace std;
 
-Character::Character(Types::CharacterClass charcaterClass, int index) : PlayerIndex(index), Health(100), BaseDamage(50), DamageMultiplier(1), Icon(' '), IsDead(false)
+//TODO::Add all params with defaults
+Character::Character(Types::CharacterClass charcaterClass, int index) : PlayerIndex(index), Health(100), BaseDamage(50), DamageMultiplier(1), Icon('X'), IsDead(false), AttackRange(1)
 {
 }
 
@@ -17,6 +18,7 @@ Character::~Character()
 
 bool Character::TakeDamage(float amount)
 {
+	//Check if damage kills character
 	if ((Health -= amount) <= 0)
 	{
 		Die();
@@ -25,30 +27,29 @@ bool Character::TakeDamage(float amount)
 	return false;
 }
 
-int Character::getIndex(std::vector<Types::GridBox*> v, int index)
-{
-	return 0;
-}
+//int Character::getIndex(std::vector<Types::GridBox*> v, int index)
+//{
+//	return 0;
+//}
 
 void Character::Die()
 {
-	// TODO >> kill
+	Health = 0;
 	IsDead = true;
-	//TODO >> end the game?
 }
+//
+//void Character::WalkTo(bool CanWalk)
+//{
+//
+//}
+//
 
-void Character::WalkTo(bool CanWalk)
-{
 
-}
-
-
-
-void Character::StartTurn(std::shared_ptr<Grid> battlefield) {
-	printf("Player %d turn\n", PlayerIndex);
+void Character::StartTurn(std::shared_ptr<Grid> battlefieldGrid) {
+	printf("Player %c turn\n", Icon);
 	if (target && !target->IsDead)
 	{
-		if (CheckCloseTargets(battlefield, 1))
+		if (CheckCloseTargets(battlefieldGrid, AttackRange)) //If target is within range, character attacks
 		{
 			Attack(target);
 			return;
@@ -56,78 +57,68 @@ void Character::StartTurn(std::shared_ptr<Grid> battlefield) {
 		else
 		{   // if there is no target close enough, calculates in wich direction this character should move to be closer to a possible target
 
+			int newBoxX = currentBox->xIndex;
+			int newBoxY = currentBox->yIndex;
 
-			if (currentBox->xIndex > target->currentBox->xIndex)
+			//We check target position compared to player on X and store the movement to that direction accordingly
+			if (currentBox->xIndex != target->currentBox->xIndex)
 			{
-				auto currentIndex = currentBox->xIndex;
-				auto foundBox = std::find_if(battlefield->grids.begin(), battlefield->grids.end(), [&currentIndex](const std::shared_ptr<Types::GridBox>& Box) {
-					return Box->xIndex == currentIndex - 1;
-					});
-				if (foundBox != battlefield->grids.end())
+				if (currentBox->xIndex > target->currentBox->xIndex)
 				{
-					currentBox->ocupied = false;
-					battlefield->grids[currentBox->Index] = currentBox;
-
-					currentBox = (battlefield->grids[currentBox->Index - 1]);
-					currentBox->ocupied = true;
-					battlefield->grids[currentBox->Index] = currentBox;
-					//Console.WriteLine($"Player {PlayerIndex} walked left\n");
-					battlefield->drawBattlefield();
-
-					return;
+					newBoxX--;
+				}
+				else if (currentBox->xIndex < target->currentBox->xIndex)
+				{
+					newBoxX++;
 				}
 			}
-			else if (currentBox->xIndex < target->currentBox->xIndex)
+			else if (currentBox->yIndex != target->currentBox->yIndex)
 			{
-				currentBox->ocupied = false;
-				battlefield->grids[currentBox->Index] = currentBox;
-				currentBox = (battlefield->grids[currentBox->Index + 1]);
-				return;
-				battlefield->grids[currentBox->Index] = currentBox;
-				//Console.WriteLine($"Player {PlayerIndex} walked right\n");
-				battlefield->drawBattlefield();
+				//We check target position compared to player on Y
+				if (currentBox->yIndex > target->currentBox->yIndex)
+				{
+					newBoxY--;
+				}
+				else if (currentBox->yIndex < target->currentBox->yIndex)
+				{
+					newBoxY++;
+				}
 			}
 
-			if (currentBox->yIndex > target->currentBox->yIndex)
+			//If the new
+			if (newBoxX >= 0 && newBoxX < battlefieldGrid->xLength && newBoxY >= 0 && newBoxY < battlefieldGrid->yLength)
 			{
-				battlefield->drawBattlefield();
-				currentBox->ocupied = false;
-				battlefield->grids[currentBox->Index] = currentBox;
-				currentBox = battlefield->grids[(currentBox->Index - battlefield->xLenght)];
-				currentBox->ocupied = true;
-				battlefield->grids[currentBox->Index] = currentBox;
-				//Console.WriteLine($"PlayerB {PlayerIndex} walked up\n");
-				return;
-			}
-			else if (currentBox->yIndex < target->currentBox->yIndex)
-			{
-				currentBox->ocupied = true;
-				battlefield->grids[currentBox->Index] = currentBox;
-				currentBox = battlefield->grids[currentBox->Index + battlefield->xLenght];
-				currentBox->ocupied = false;
-				battlefield->grids[currentBox->Index] = currentBox;
-				//Console.WriteLine($"Player {PlayerIndex} walked down\n");
-				battlefield->drawBattlefield();
+				int index = battlefieldGrid->GetBoxIndexByLocation(newBoxX, newBoxY);
+				auto newBox = battlefieldGrid->grids[index];
 
-				return;
+				if (!newBox->GetOccupied())
+				{
+					currentBox->SetOccupy(false, ' ');
+					currentBox = newBox;
+					currentBox->SetOccupy(true, Icon);
+					battlefieldGrid->drawBattlefield();
+				}
 			}
 		}
 	}
-	//TODO: Call end of the game
+	else
+	{
+		printf("Target does not exist! Game is over!");
+	}
 	return;
 }
 
 bool Character::CheckCloseTargets(std::shared_ptr<Grid> battlefield, int range)
 {
 	std::shared_ptr<Types::GridBox> targetBox = target->currentBox;
-	int distance = abs(targetBox->xIndex - currentBox->xIndex) + abs(targetBox->yIndex - currentBox->yIndex);
-	return distance <= range;
+	int distance = abs(targetBox->xIndex - currentBox->xIndex) + abs(targetBox->yIndex - currentBox->yIndex); //Get the distance between character and its target
+	return distance <= range; //If distance is within range it returns true
 }
 
 void Character::Attack(std::shared_ptr<Character> target)
 {
 	target->TakeDamage(BaseDamage * DamageMultiplier);
-	printf("Player %d Attacked player %d\n", PlayerIndex, target->PlayerIndex);
+	printf("Player %c Attacked player %c\n", Icon, target->Icon);
 }
 
 void Character::SetTarget(const std::shared_ptr<Character>& target)

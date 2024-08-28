@@ -98,8 +98,10 @@ void BattleField::CreatePlayerCharacter(int classIndex)
 
 	//Create player character with chosen character class
 	PlayerCharacter = std::make_shared<Character>(characterClass, AllPlayers.size());
+	PlayerCharacter->Icon = 'A';
 	AllPlayers.push_back(PlayerCharacter);
-	printf("Player %d created!\n", PlayerCharacter->PlayerIndex);
+	printf("Player %c created!\n", PlayerCharacter->Icon);
+
 	//TODO setup based on class in character itself
 	//PlayerCharacter->Health = 100;
 	//PlayerCharacter->BaseDamage = 20;
@@ -132,43 +134,34 @@ void BattleField::StartGame()
 }
 
 void BattleField::StartTurn() {
-
-	if (currentTurn == 0)
+	printf("\n");
+	printf("Turn #%d\n", currentTurn);
+	//Iterate through players
+	for (auto i = AllPlayers.begin(); i != AllPlayers.end();)
 	{
-		//AllPlayers.Sort();  
-	}
-	for (auto& player : AllPlayers)
-	{
+		auto player = (*i);
+		//Check if player is dead, remove it from the list
 		if (player->IsDead)
+		{
+			i = AllPlayers.erase(i); //Remove player if dead
 			break;
+		}
 		player->StartTurn(grid);
+		i++;
 	}
+	//Handle end of turn checks
 	HandleTurn();
 }
 
 void BattleField::HandleTurn()
 {
-	if (PlayerCharacter->IsDead)
+	if (AllPlayers.size() <= 1) //If there is only 1 player or less left, game ends
 	{
-		printf("\n");
-
-		printf("You Lost!\n");
 		EndGame();
-		return;
 	}
-	else if (EnemyCharacter->IsDead)
+	else //Otherwise play next turn
 	{
-		printf("\n");
-
-		printf("You Won!\n");
-		EndGame();
-
-
-		return;
-	}
-	else
-	{
-		printf("Click on any key for next players turn...\n");
+		printf("Click on any key for next turn...\n");
 		std::cin.clear();
 		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 		std::cin.get();
@@ -179,6 +172,16 @@ void BattleField::HandleTurn()
 	}
 }
 
+void BattleField::EndGame()
+{
+	if (AllPlayers.size() > 0)
+		printf("Player %d Won!", AllPlayers.front()->PlayerIndex);
+	else
+		printf("Game Over!");
+	AllPlayers.clear();
+	EnemyCharacter.reset();
+	PlayerCharacter.reset();
+}
 int BattleField::GetRandomInt(int min, int max)
 {
 	int range = max - min + 1; //Get the range with max included
@@ -198,12 +201,12 @@ void BattleField::AlocatePlayerCharacter()
 	int random = GetRandomInt(0, grid->grids.size() - 1);
 	std::shared_ptr<Types::GridBox> RandomLocation = grid->grids[random];
 
-	if (!RandomLocation->ocupied)
+	if (!RandomLocation->GetOccupied())
 	{
 		//Types::GridBox* PlayerCurrentLocation = RandomLocation;
-		RandomLocation->ocupied = true;
+		RandomLocation->SetOccupy(true, PlayerCharacter->Icon);
 		PlayerCharacter->currentBox = RandomLocation; //Set player box location
-		printf("Player grid location: X= %d, Y= %d\n", RandomLocation->xIndex, RandomLocation->yIndex);
+		printf("Player %c grid location: X= %d, Y= %d\n", PlayerCharacter->Icon, PlayerCharacter->currentBox->xIndex, PlayerCharacter->currentBox->yIndex);
 		AlocateEnemyCharacter();
 	}
 	else
@@ -218,11 +221,11 @@ void BattleField::AlocateEnemyCharacter()
 	int random = GetRandomInt(0, grid->grids.size() - 1);
 	std::shared_ptr<Types::GridBox> RandomLocation = grid->grids[random];
 
-	if (!RandomLocation->ocupied)
+	if (!RandomLocation->GetOccupied())
 	{
-		RandomLocation->ocupied = true;
+		RandomLocation->SetOccupy(true, EnemyCharacter->Icon);
 		EnemyCharacter->currentBox = RandomLocation;//Set enemy box location
-		printf("Enemy grid location: X= %d, Y= %d\n", RandomLocation->xIndex, RandomLocation->yIndex);
+		printf("Player %c grid location: X= %d, Y= %d\n",EnemyCharacter->Icon, RandomLocation->xIndex, RandomLocation->yIndex);
 		grid->drawBattlefield();
 	}
 	else
@@ -231,10 +234,4 @@ void BattleField::AlocateEnemyCharacter()
 	}
 }
 
-void BattleField::EndGame()
-{
-	AllPlayers.clear();
-	EnemyCharacter.reset();
-	PlayerCharacter.reset();
-}
 

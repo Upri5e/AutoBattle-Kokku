@@ -12,10 +12,12 @@ public:
 
     std::vector<std::shared_ptr<Types::GridBox>> grids;
 
-    int xLenght;
+    int xLength;
     int yLength;
     
     // prints the matrix that indicates the tiles of the battlefield
     void drawBattlefield();
+
+    int GetBoxIndexByLocation(int x, int y);
 };
 

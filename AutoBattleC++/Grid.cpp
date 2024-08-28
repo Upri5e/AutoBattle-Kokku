@@ -2,46 +2,49 @@
 #include "Types.h"
 #include <memory>
 
-Grid::Grid(int Lines, int Columns)
+Grid::Grid(int Lines, int Columns) : xLength(Columns), yLength(Lines)
 {
-    xLenght = Lines;
-    yLength = Columns;
-    //Console.WriteLine("The battle field has been created\n");
-    for (int i = 0; i < Lines; i++)
-    {
-        for (int j = 0; j < Columns; j++)
-        {
-            auto newBox = std::make_shared<Types::GridBox>(i, j, false, (Columns * i + j)); //Change to a unique ptr to avoid memory leak 
-            grids.push_back(std::move(newBox)); // use emplace_back to append the new element
-            //Console.Write($"{newBox.Index}\n");
-        }
-    }
+	//Console.WriteLine("The battle field has been created\n");
+	for (int j = 0; j < yLength; j++) //Col
+	{
+		for (int i = 0; i < xLength; i++) //Row
+		{
+			int index = j * xLength + i;
+			grids.emplace_back(std::make_shared<Types::GridBox>(i, j, false, index)); // use emplace_back to append the new element
+			printf("Created Box %d at X=%d, Y=%d\n",index, i, j);
+			//Console.Write($"{newBox.Index}\n");
+		}
+	}
 	//drawBattlefield(Lines, Columns);
 }
 
-Grid::~Grid() 
+Grid::~Grid()
 {
 
 }
 
 void Grid::drawBattlefield()
 {
-    for (int i = 0; i < xLenght; i++)
-    {
-        for (int j = 0; j < yLength; j++)
-        {
-            //Loop through the grids and check if occupied
-            std::shared_ptr<Types::GridBox> currentgrid = grids[yLength * i + j];
-            if (currentgrid->ocupied)
-            {
-                printf("[X]\t");
-            }
-            else
-            {
-                printf("[ ]\t");
-            }
-        }
-        printf("\n");
-    }
-    printf("\n");
+	for (int j = 0; j < yLength; j++) //Col
+	{
+		for (int i = 0; i < xLength; i++) //Row
+		{
+			//Loop through the grids and assign icon based on occupation status
+			std::shared_ptr<Types::GridBox> currentgrid = grids[GetBoxIndexByLocation(i,j)];
+			printf("[%c]\t", currentgrid->icon);
+		}
+		printf("\n");
+	}
+	printf("\n");
+}
+
+//Gets the box index inside grids
+int Grid::GetBoxIndexByLocation(int x, int y)
+{
+	if (x < 0 || x >= xLength || y < 0 || y >= yLength)
+	{
+		printf("Box location invalid. Enter locations between 0 and grid width and height... %d X %d", xLength, yLength);
+		return -1;
+	}
+	return y * xLength + x;
 }
