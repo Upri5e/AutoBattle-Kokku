@@ -22,7 +22,8 @@ public:
     float DamageMultiplier;
     float AttackRange;
 
-    int teamIndex = 0;
+    std::shared_ptr<Types::Team> currentTeam;
+
     int PlayerIndex;
 
     bool IsDead;

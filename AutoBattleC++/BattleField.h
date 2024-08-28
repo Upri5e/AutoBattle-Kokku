@@ -17,6 +17,7 @@ public:
 	std::vector<std::shared_ptr<Character>> AllPlayers; //We are using shared ptr now for all characters
 	int currentTurn;
 	int numberOfPossibleTiles;
+	int maxTeamsCount;
 
 	//Teams Setup
 	int charactersPerTeam;

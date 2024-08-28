@@ -15,9 +15,12 @@ BattleField::BattleField() {
 	numberOfPossibleTiles = 0;
 	srand(time(NULL)); //Seed random number generator
 
-	//TODO: Add restriction to number based on grid size
+	//Set the number of teams
+	maxTeamsCount = 3;
+
 	//Can be changed to allow user input
-	charactersPerTeam = 2;
+	//Set number of characters per team
+	charactersPerTeam = 4;
 	//Setup();
 }
 
@@ -98,9 +101,8 @@ void BattleField::CreateGameCharacters(int playerClassIndex)
 
 	//Create the gridbox cache for available locations to filter out the occupied ones
 	std::vector<std::shared_ptr<Types::GridBox>> availableLocations = grid->grids;
-	//TODO:changed to take user input for number of teams instead
-	// Loop through the 2 teams
-	for (int i = 0; i < 2; i++)
+	// Loop through the teams (can be changed to take user input for number of teams)
+	for (int i = 0; i < maxTeamsCount; i++)
 	{
 		Teams.emplace_back(std::make_shared<Types::Team>(i, '0' + i + 1)); //Team icon set based on index
 		for (int j = 0; j < charactersPerTeam; j++)
@@ -116,7 +118,7 @@ void BattleField::CreateGameCharacters(int playerClassIndex)
 				std::string playerIcon = "A"; //Player icon is always A
 				currentMember = std::make_shared<Character>(characterClass, currentIndex, this, playerIcon);
 				Teams[i]->AddMember(currentMember);
-				currentMember->teamIndex = i;
+				currentMember->currentTeam = Teams[i];
 				printf("Player %s created!\n", currentMember->Icon.c_str());
 				playerCreated = true;
 			}
@@ -128,7 +130,7 @@ void BattleField::CreateGameCharacters(int playerClassIndex)
 				std::string memberIcon = std::string(1, Teams[i]->teamIcon) + char('A' + i * charactersPerTeam + j); // Members icon is the team icon + next letter
 				currentMember = std::make_shared<Character>(botClass, currentIndex, this, memberIcon);
 				Teams[i]->AddMember(currentMember);
-				currentMember->teamIndex = i;
+				currentMember->currentTeam = Teams[i];
 			}
 			//Check if there are no more locations available
 			if (availableLocations.empty())
@@ -171,6 +173,8 @@ void BattleField::StartGame()
 void BattleField::StartTurn() {
 	printf("\n");
 	printf("Turn #%d\n", currentTurn);
+
+	//printf("Remaining players: %zu\n", AllPlayers.size());
 
 	//Iterate through players
 	for (auto i = AllPlayers.begin(); i != AllPlayers.end();)
@@ -216,24 +220,35 @@ void BattleField::EndGame()
 		printf("Game Over!\n");
 	AllPlayers.clear();
 	Teams.clear();
+	grid.reset();
 }
 void BattleField::RemoveTeam(std::shared_ptr<Types::Team> team)
 {
 	auto i = std::find(Teams.begin(), Teams.end(), team);
 	if (i != Teams.end())
 	{
+		//printf("Team removed\n");
 		Teams.erase(i);
 	}
 }
 void BattleField::RemoveTeamMember(std::shared_ptr<Character> member)
 {
-	Teams[member->teamIndex]->RemoveMember(member);
+	//Remove member from its team
+	auto team = member->currentTeam;
+	team->RemoveMember(member);
+
 	//Check if team is empty after removing member
-	if (Teams[member->teamIndex]->TeamMembers.size() == 0)
-		RemoveTeam(Teams[member->teamIndex]);
+	if (team->TeamMembers.empty())
+	{
+		//Remove team from list if it is empty
+		RemoveTeam(team);
+	}
 }
+
+
 void BattleField::NotifyCharacterDied(const std::shared_ptr<Character>& character)
 {
+	//find the character from Allplayers and remove it completely
 	auto i = std::find(AllPlayers.begin(), AllPlayers.end(), character);
 	if (i != AllPlayers.end())
 	{
@@ -246,9 +261,6 @@ int BattleField::GetRandomInt(int min, int max)
 {
 	int range = max - min + 1; //Get the range with max included
 	int index = rand() % range + min;
-	printf("Rand: %d\n", index);
+	//printf("Rand: %d\n", index);
 	return index;
 }
-
-
-

@@ -110,7 +110,7 @@ void Character::PlayTurn(std::shared_ptr<Grid> battlefieldGrid) {
 		//Go through available teams and get the nearest target from one of them
 		for (auto team : battleField->Teams)
 		{
-			if (team->teamIndex == teamIndex)
+			if (team->teamIndex == currentTeam->teamIndex)
 				continue;
 			if (SetNearestTarget(team->TeamMembers, battlefieldGrid))
 			{
@@ -146,7 +146,7 @@ bool Character::SetNearestTarget(const std::vector<std::shared_ptr<Character>>& 
 	{
 		for (auto Target : potentialTargets)//iterate through potential target and get the distance to character
 		{
-			if (Target->teamIndex == teamIndex)
+			if (Target->currentTeam->teamIndex == currentTeam->teamIndex)
 				continue;
 
 			int thisDistance = GetDistanceToTarget(*Target);
