@@ -1,7 +1,7 @@
 #pragma once
 #include "Character.h"
 #include "Types.h"
-#include <list>
+#include <vector>
 #include <iostream>
 #include "Grid.h"
 
@@ -14,21 +14,20 @@ public:
 	std::shared_ptr<Grid> grid;
 	//std::shared_ptr<Types::GridBox> PlayerCurrentLocation;
 	//std::shared_ptr<Types::GridBox> EnemyCurrentLocation;
-	std::list<std::shared_ptr<Character>> AllPlayers; //We are using shared ptr now for all characters
-	std::shared_ptr<Character> PlayerCharacter;
-	//Character* PlayerCharacter;
-	std::shared_ptr<Character> EnemyCharacter; //Declaring shared ptr does not need *
+	std::vector<std::shared_ptr<Character>> AllPlayers; //We are using shared ptr now for all characters
 	int currentTurn;
 	int numberOfPossibleTiles;
 
+	//Teams Setup
+	int charactersPerTeam;
+
+	std::vector<std::shared_ptr<Types::Team>> Teams;
 
 	void Setup();
 
 	void GetPlayerChoice();
 
-	void CreatePlayerCharacter(int classIndex);
-
-	void CreateEnemyCharacter();
+	void CreateGameCharacters(int playerClassIndex);
 
 	void StartGame();
 
@@ -38,13 +37,13 @@ public:
 
 	int GetRandomInt(int min, int max);
 
-	void AlocatePlayers();
-
-	void AlocatePlayerCharacter();
-
-	void AlocateEnemyCharacter();
-
 	void EndGame();
+
+	void RemoveTeam(std::shared_ptr<Types::Team> team);
+
+	void RemoveTeamMember(std::shared_ptr<Character> member);
+
+	void NotifyCharacterDied(const std::shared_ptr<Character>& character);
 };
 
 

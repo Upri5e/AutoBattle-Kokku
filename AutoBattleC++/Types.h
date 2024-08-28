@@ -1,42 +1,67 @@
 #pragma once
-#include <String>
+#include <string>
+#include <memory>
+#include <vector>
+
+class Character;
+
 class Types
 {
 public:
-
     struct GridBox
     {
     private:
         bool ocupied;
 
     public:
-        char icon;
+
+        std::string icon;
         int xIndex;
         int yIndex;
         int Index;
-
-
-        GridBox() : xIndex(0), yIndex(0), ocupied(false), Index(0), icon(' ') //Default Cstr        
-        {
-
-        }
 
         GridBox(int x, int y, bool ocupied, int index)
         {
             xIndex = x;
             yIndex = y;
-            this->ocupied = ocupied; //Use this to make sure we are setting the structs variable as the value of the param
+            this->ocupied = ocupied; // Use this to make sure we are setting the struct's variable
             Index = index;
-            icon = ' ';
+            icon = " ";
         }
 
-        void SetOccupy(bool status, char icon)
+        void SetOccupy(bool status, std::string icon)
         {
             ocupied = status;
             this->icon = icon;
         }
-        bool GetOccupied() {
+
+        bool GetOccupied() const {
             return ocupied;
+        }
+    };
+
+    struct Team
+    {
+        int teamIndex;
+        char teamIcon;
+        std::vector<std::shared_ptr<Character>> TeamMembers;
+
+        Team(int index, char icon) :
+            teamIndex(index), teamIcon(icon)
+        {
+        }
+
+        void AddMember(std::shared_ptr<Character> newMember)
+        {
+            TeamMembers.push_back(newMember);
+        }
+        
+        void RemoveMember(std::shared_ptr<Character> member)
+        {
+            //iterate through to find the team member then remove it
+            auto i = std::find(TeamMembers.begin(), TeamMembers.end(), member);
+            if (i != TeamMembers.end())
+                TeamMembers.erase(i);
         }
     };
 
@@ -52,17 +77,16 @@ public:
     {
         switch (characterClass)
         {
-        case Types::Paladin:
+        case Paladin:
             return "Paladin";
-        case Types::Warrior:
+        case Warrior:
             return "Warrior";
-        case Types::Cleric:
+        case Cleric:
             return "Cleric";
-        case Types::Archer:
+        case Archer:
             return "Archer";
         default:
             return "Invalid Class";
         }
     }
 };
-

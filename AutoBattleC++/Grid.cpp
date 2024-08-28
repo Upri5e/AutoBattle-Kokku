@@ -2,7 +2,7 @@
 #include "Types.h"
 #include <memory>
 
-Grid::Grid(int Lines, int Columns) : xLength(Columns), yLength(Lines)
+Grid::Grid(int Lines, int Columns) : xLength(Columns), yLength(Lines) //Fixed the reversed column and rows issue
 {
 	//Console.WriteLine("The battle field has been created\n");
 	for (int j = 0; j < yLength; j++) //Col
@@ -31,7 +31,7 @@ void Grid::drawBattlefield()
 		{
 			//Loop through the grids and assign icon based on occupation status
 			std::shared_ptr<Types::GridBox> currentgrid = grids[GetBoxIndexByLocation(i,j)];
-			printf("[%c]\t", currentgrid->icon);
+			printf("[%s]\t", currentgrid->icon.c_str());
 		}
 		printf("\n");
 	}

@@ -1,50 +1,54 @@
 #pragma once
-#include "Grid.h"
-#include "Character.h"
-#include "Types.h"
 #include <memory>
-#include <Vector>
+#include <vector>
+#include "Types.h"
+#include "Grid.h"
+#include <string>
+#include "BattleField.h"
 
-class Character
+class BattleField;
+
+//Inherit from enable shared from this to allow creating a temporary shared ptr from the weak ptr when we want to notify battlefield on death
+class Character : public std::enable_shared_from_this<Character>
 {
 public:
 
-    Character(Types::CharacterClass charcaterClass, int index);
+    Character(Types::CharacterClass charcaterClass, int index, BattleField* battlefield, std::string icon = "X");
     ~Character();
 
     
-    float Health;
+    float CurrentHealth;
     float BaseDamage;
     float DamageMultiplier;
     float AttackRange;
-    //public GridBox currentBox;
-    int PlayerIndex;
-    //public Character Target{ get; set; }
 
+    int teamIndex = 0;
+    int PlayerIndex;
 
     bool IsDead;
-    char Icon;
+    std::string Icon;
 
     std::shared_ptr<Types::GridBox> currentBox;
 
-    bool TakeDamage(float amount);
-
-    //int getIndex(std::vector<Types::GridBox*> v, int index);
+    void TakeDamage(float amount);
 
     void Die();
 
-    //void WalkTo(bool CanWalk);
-
-    void StartTurn(std::shared_ptr<Grid> battlefieldGrid);
+    void PlayTurn(std::shared_ptr<Grid> battlefieldGrid);
 
     bool CheckCloseTargets(std::shared_ptr<Grid> battlefieldGrid, int range);
 
     void Attack(std::shared_ptr<Character> target);
 
-    void SetTarget(const std::shared_ptr<Character>& target);
+    bool SetNearestTarget(const std::vector<std::shared_ptr<Character>>& potentialTargets, const std::shared_ptr<Grid>& battlefieldGrid);
+
+    std::shared_ptr<Character> GetTarget();
+
+    int GetDistanceToTarget(const Character& target);
 
 private:
     std::shared_ptr<Character> target; //Change to shared ptr to avoid memory leak
-
+    BattleField* battleField;
+    float MaxHealth;
 };
 

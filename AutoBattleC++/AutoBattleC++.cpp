@@ -8,6 +8,7 @@ int main()
 {
     BattleField battleField = BattleField();
     battleField.Setup();
+    return 0;
 }
 
 
