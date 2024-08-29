@@ -2,8 +2,8 @@
 #include <math.h>
 //using namespace std;
 
-Character::Character(Types::CharacterClass charClass, int index, BattleField* battlefield, std::string icon)
-	: PlayerIndex(index), MaxHealth(100), BaseDamage(50), DamageMultiplier(1), Icon(icon), IsDead(false), AttackRange(1), battleField(battlefield)
+Character::Character(Types::CharacterClass charClass, int index, std::string icon)
+	: PlayerIndex(index), MaxHealth(100), BaseDamage(50), DamageMultiplier(1), Icon(icon), IsDead(false), AttackRange(1)
 {
 	CurrentHealth = MaxHealth;
 }
@@ -34,8 +34,8 @@ void Character::Die()
 	currentBox->SetOccupy(false, " ");
 
 	printf("Player %s died!\n", Icon.c_str());
-	if (battleField != nullptr)
-		battleField->NotifyCharacterDied(shared_from_this()); //Pass this character as shared ptr
+	if (eventsSystem)
+		eventsSystem->NotifyCharacterDeath(shared_from_this());
 }
 
 
@@ -52,7 +52,7 @@ void Character::PlayTurn(std::shared_ptr<Grid> battlefieldGrid) {
 			return;
 		}
 		else
-		{   
+		{
 			// if there is no target close enough, calculates in wich direction this character should move to be closer to a possible target
 			int newBoxX = currentBox->xIndex;
 			int newBoxY = currentBox->yIndex;
@@ -105,21 +105,6 @@ void Character::PlayTurn(std::shared_ptr<Grid> battlefieldGrid) {
 			}
 		}
 	}
-	else 
-	{
-		//Go through available teams and get the nearest target from one of them
-		for (auto team : battleField->Teams)
-		{
-			if (team->teamIndex == currentTeam->teamIndex)
-				continue;
-			if (SetNearestTarget(team->TeamMembers, battlefieldGrid))
-			{
-				PlayTurn(battlefieldGrid); //play the turn again after assigning a nerw target				
-				return;
-			}
-		}
-		//printf("Should not reach this");
-	}
 }
 
 bool Character::CheckCloseTargets(std::shared_ptr<Grid> battlefield, int range)
@@ -141,7 +126,7 @@ bool Character::SetNearestTarget(const std::vector<std::shared_ptr<Character>>& 
 	std::shared_ptr<Character> nearestTarget = nullptr;
 	int maxRadius = sqrt((battlefieldGrid->xLength * battlefieldGrid->xLength) + (battlefieldGrid->yLength * battlefieldGrid->yLength));
 	int closestDistance = maxRadius;
-	
+
 	for (int radius = 1; radius <= maxRadius; radius++) //Increase radius with every iteration
 	{
 		for (auto Target : potentialTargets)//iterate through potential target and get the distance to character
@@ -181,5 +166,10 @@ int Character::GetDistanceToTarget(const Character& target)
 {
 	std::shared_ptr<Types::GridBox> targetBox = target.currentBox;
 	return sqrt((targetBox->xIndex - currentBox->xIndex) * (targetBox->yIndex - currentBox->yIndex));
+}
+
+void Character::SetEventsSystem(std::shared_ptr<Events> EventsSystem)
+{
+	eventsSystem = EventsSystem;
 }
 

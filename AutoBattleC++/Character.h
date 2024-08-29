@@ -5,6 +5,7 @@
 #include "Grid.h"
 #include <string>
 #include "BattleField.h"
+#include "Events.h"
 
 class BattleField;
 
@@ -13,7 +14,7 @@ class Character : public std::enable_shared_from_this<Character>
 {
 public:
 
-    Character(Types::CharacterClass charcaterClass, int index, BattleField* battlefield, std::string icon = "X");
+    Character(Types::CharacterClass charcaterClass, int index, std::string icon = "X");
     ~Character();
 
     
@@ -47,9 +48,10 @@ public:
 
     int GetDistanceToTarget(const Character& target);
 
+    void SetEventsSystem(std::shared_ptr<Events> EventsSystem);
 private:
     std::shared_ptr<Character> target; //Change to shared ptr to avoid memory leak
-    BattleField* battleField;
     float MaxHealth;
+    std::shared_ptr<Events> eventsSystem;
 };
 

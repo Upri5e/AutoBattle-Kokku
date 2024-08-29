@@ -1,28 +1,39 @@
-#pragma once
+#ifndef BATTLEFIELD_H
+#define	BATTLEFIELD_H
+
 #include "Character.h"
 #include "Types.h"
 #include <vector>
 #include <iostream>
 #include "Grid.h"
+#include "Events.h"
 
 class BattleField
 {
+private:
+
+	std::shared_ptr<Events> eventsSystem;
+
+	int currentTurn;
+	int numberOfPossibleTiles;
+
+	//Characters Setup
+	int maxTeamsCount;
+	int charactersPerTeam;
+	std::vector<std::shared_ptr<Character>> AllPlayers; //We are using shared ptr now for all characters
+	std::vector<std::shared_ptr<Types::Team>> Teams;
+
+	void OnCharacterDeath(const std::shared_ptr<Character>& character);
+
+	void RemoveTeam(std::shared_ptr<Types::Team> team);
+
+	void RemoveTeamMember(std::shared_ptr<Character> member);
+
 public:
 
 	BattleField();
 
 	std::shared_ptr<Grid> grid;
-	//std::shared_ptr<Types::GridBox> PlayerCurrentLocation;
-	//std::shared_ptr<Types::GridBox> EnemyCurrentLocation;
-	std::vector<std::shared_ptr<Character>> AllPlayers; //We are using shared ptr now for all characters
-	int currentTurn;
-	int numberOfPossibleTiles;
-	int maxTeamsCount;
-
-	//Teams Setup
-	int charactersPerTeam;
-
-	std::vector<std::shared_ptr<Types::Team>> Teams;
 
 	void Setup();
 
@@ -32,19 +43,13 @@ public:
 
 	void StartGame();
 
-	void StartTurn();
+	void PlayTurn();
 
 	void HandleTurn();
 
 	int GetRandomInt(int min, int max);
 
 	void EndGame();
-
-	void RemoveTeam(std::shared_ptr<Types::Team> team);
-
-	void RemoveTeamMember(std::shared_ptr<Character> member);
-
-	void NotifyCharacterDied(const std::shared_ptr<Character>& character);
 };
-
+#endif // !BATTLEFIELD_H
 

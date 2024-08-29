@@ -143,11 +143,11 @@
     <ClCompile Include="BattleField.cpp" />
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="Grid.cpp" />
-    <ClCompile Include="Types.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BattleField.h" />
     <ClInclude Include="Character.h" />
+    <ClInclude Include="Events.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="Types.h" />
   </ItemGroup>

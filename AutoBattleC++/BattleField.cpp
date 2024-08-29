@@ -9,11 +9,11 @@
 //using namespace std; Bad practice
 
 BattleField::BattleField() {
+	srand(time(NULL)); //Seed random number generator
 
 	//AllPlayers = new list<Character>(); No need to initialize
 	currentTurn = 0;
 	numberOfPossibleTiles = 0;
-	srand(time(NULL)); //Seed random number generator
 
 	//Set the number of teams
 	maxTeamsCount = 3;
@@ -22,6 +22,15 @@ BattleField::BattleField() {
 	//Set number of characters per team
 	charactersPerTeam = 4;
 	//Setup();
+
+	//Initialize events system
+	eventsSystem = std::make_shared<Events>();
+
+	//Add OnCharacterDeath to the event when character dies
+	eventsSystem->AddListenerToCharacterDeath([this](std::shared_ptr<Character> character)
+		{
+			OnCharacterDeath(character); //Will be called when a character dies passing in the dead character
+		});
 }
 
 void BattleField::Setup()
@@ -98,7 +107,6 @@ void BattleField::GetPlayerChoice()
 void BattleField::CreateGameCharacters(int playerClassIndex)
 {
 	bool playerCreated = false;
-
 	//Create the gridbox cache for available locations to filter out the occupied ones
 	std::vector<std::shared_ptr<Types::GridBox>> availableLocations = grid->grids;
 	// Loop through the teams (can be changed to take user input for number of teams)
@@ -116,9 +124,7 @@ void BattleField::CreateGameCharacters(int playerClassIndex)
 				Types::CharacterClass characterClass = static_cast<Types::CharacterClass>(playerClassIndex);
 				printf("Player Class Choice: %s\n", Types::GetCharacterClassName(characterClass));
 				std::string playerIcon = "A"; //Player icon is always A
-				currentMember = std::make_shared<Character>(characterClass, currentIndex, this, playerIcon);
-				Teams[i]->AddMember(currentMember);
-				currentMember->currentTeam = Teams[i];
+				currentMember = std::make_shared<Character>(characterClass, currentIndex, playerIcon);
 				printf("Player %s created!\n", currentMember->Icon.c_str());
 				playerCreated = true;
 			}
@@ -128,10 +134,13 @@ void BattleField::CreateGameCharacters(int playerClassIndex)
 				Types::CharacterClass botClass = static_cast<Types::CharacterClass>(randomInteger); //Safer casting with static to ensure value is not out of range
 				printf("Enemy Class Choice: %s\n", Types::GetCharacterClassName(botClass));
 				std::string memberIcon = std::string(1, Teams[i]->teamIcon) + char('A' + i * charactersPerTeam + j); // Members icon is the team icon + next letter
-				currentMember = std::make_shared<Character>(botClass, currentIndex, this, memberIcon);
-				Teams[i]->AddMember(currentMember);
-				currentMember->currentTeam = Teams[i];
+				currentMember = std::make_shared<Character>(botClass, currentIndex, memberIcon);
 			}
+
+			Teams[i]->AddMember(currentMember);
+			currentMember->currentTeam = Teams[i];
+			currentMember->SetEventsSystem(eventsSystem); //Set eventsystem in characters
+
 			//Check if there are no more locations available
 			if (availableLocations.empty())
 			{
@@ -167,10 +176,10 @@ void BattleField::StartGame()
 	}
 	printf("Game Started...Have Fun!\n");
 	grid->drawBattlefield();
-	StartTurn();
+	PlayTurn();
 }
 
-void BattleField::StartTurn() {
+void BattleField::PlayTurn() {
 	printf("\n");
 	printf("Turn #%d\n", currentTurn);
 
@@ -185,13 +194,19 @@ void BattleField::StartTurn() {
 			i = AllPlayers.erase(i);
 			continue;
 		}
+		auto playerTarget = player->GetTarget();
+		if (!playerTarget || playerTarget->IsDead)
+		{
+			if (!player->SetNearestTarget(AllPlayers, grid)) {
+				break;
+			}
+		}
 		player->PlayTurn(grid);
 		i++;
 	}
 	//Handle end of turn checks
 	HandleTurn();
 }
-
 
 void BattleField::HandleTurn()
 {
@@ -208,20 +223,10 @@ void BattleField::HandleTurn()
 
 		//Next turn starts
 		currentTurn++;
-		StartTurn();
+		PlayTurn();
 	}
 }
 
-void BattleField::EndGame()
-{
-	if (Teams.size() > 0)
-		printf("Team %c Won!\n", Teams.front()->teamIcon);
-	else
-		printf("Game Over!\n");
-	AllPlayers.clear();
-	Teams.clear();
-	grid.reset();
-}
 void BattleField::RemoveTeam(std::shared_ptr<Types::Team> team)
 {
 	auto i = std::find(Teams.begin(), Teams.end(), team);
@@ -231,6 +236,7 @@ void BattleField::RemoveTeam(std::shared_ptr<Types::Team> team)
 		Teams.erase(i);
 	}
 }
+
 void BattleField::RemoveTeamMember(std::shared_ptr<Character> member)
 {
 	//Remove member from its team
@@ -245,8 +251,8 @@ void BattleField::RemoveTeamMember(std::shared_ptr<Character> member)
 	}
 }
 
-
-void BattleField::NotifyCharacterDied(const std::shared_ptr<Character>& character)
+//When character dies
+void BattleField::OnCharacterDeath(const std::shared_ptr<Character>& character)
 {
 	//find the character from Allplayers and remove it completely
 	auto i = std::find(AllPlayers.begin(), AllPlayers.end(), character);
@@ -257,6 +263,21 @@ void BattleField::NotifyCharacterDied(const std::shared_ptr<Character>& characte
 	}
 	grid->drawBattlefield();
 }
+
+void BattleField::EndGame()
+{
+	//Unsubscribe all from character death
+	eventsSystem->RemoveAllListenersFromCharacterDeath();
+
+	if (Teams.size() > 0)
+		printf("Team %c Won!\n", Teams.front()->teamIcon);
+	else
+		printf("Game Over!\n");
+	AllPlayers.clear();
+	Teams.clear();
+	grid.reset();
+}
+
 int BattleField::GetRandomInt(int min, int max)
 {
 	int range = max - min + 1; //Get the range with max included
