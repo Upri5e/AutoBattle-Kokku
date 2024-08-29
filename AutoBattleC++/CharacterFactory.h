@@ -14,13 +14,11 @@ public:
 		{
 		case Types::Paladin:
 			return std::make_shared<Paladin>(index, bfieldGrid, icon);
-			break;
 		case Types::Warrior:
 		case Types::Cleric:
 		case Types::Archer:
 		default:
 			return std::make_shared<Character>(charClass, index, bfieldGrid, icon);
-			break;
 		}
 	}
 };

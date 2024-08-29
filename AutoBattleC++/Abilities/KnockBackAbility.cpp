@@ -14,32 +14,33 @@ void KnockBackAbility::ActivateAbility(Character& user)
 		int newX = target->currentBox->xIndex;
 		int newY = target->currentBox->yIndex;
 		
-		while (localKnockDistance > 0)
+		while (localKnockDistance > 0) //Loop untill we cannot knock the character back anymore
 		{
-			GetLocAfterKnockback(user, localKnockDistance, newX, newY);
+			GetLocAfterKnockback(user, localKnockDistance, newX, newY); //Get the new location based on the current knockback distance
 
-			if (newX >= 0 && newX < grid->xLength && newY >= 0 && newY < grid->yLength)
+			if (newX >= 0 && newX < grid->xLength && newY >= 0 && newY < grid->yLength) //in bound of grid
 			{
 				auto newBoxIndex = grid->GetBoxIndexByLocation(newX, newY);
 				auto newBox = grid->grids[newBoxIndex];
 
-				if (newBox->GetOccupied())
+				if (newBox->GetOccupied()) //If the new box is occupied we need to -- the knockback distance and recalculate a new box
 				{
 					localKnockDistance--;
 					continue;
 				}
-				else
+				else //new boxk can be occupide > move(knockback) target to new location
 				{
 					target->currentBox->SetOccupy(false, " ");
 					target->currentBox = newBox;
 					target->currentBox->SetOccupy(true, target->Icon);
-					grid->drawBattlefield();
-					break;
+					grid->drawBattlefield(); //Draw battlefield again because the target location changed
+					break; //break out of the loop
 				}
 			}
-			else
+			else //if out of bounds we -- knockback distance and recalculate new box
 			{
-				break;
+				localKnockDistance--;
+				continue;
 			}
 		}
 	}
@@ -51,21 +52,23 @@ void KnockBackAbility::GetLocAfterKnockback(Character& user, int knockBackDist, 
 	newY = target->currentBox->yIndex;
 
 	if (user.currentBox->xIndex == target->currentBox->xIndex) { //if the 2 characters are in the same column
-		if (user.currentBox->yIndex > target->currentBox->yIndex) //Knock back the row
+		if (user.currentBox->yIndex > target->currentBox->yIndex) //Knock back on same column
 		{
-			newY += knockBackDist;
+			newY -= knockBackDist;
 		}
 		else
 		{
-			newY -= knockBackDist;
+			newY += knockBackDist;
 		}
 	}
 	else if (user.currentBox->yIndex == target->currentBox->yIndex) //Else if 2 characters are in the same row
 	{
-		if (user.currentBox->xIndex > target->currentBox->xIndex) { //knockback on column
+		if (user.currentBox->xIndex > target->currentBox->xIndex) //knockback on same row
+		{ 
 			newX -= knockBackDist;
 		}
-		else {
+		else 
+		{
 			newX += knockBackDist;
 		}
 	}

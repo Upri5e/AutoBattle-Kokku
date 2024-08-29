@@ -14,16 +14,24 @@ Character::~Character()
 
 }
 
-//Apply damage calculation to health and check for death
+//Apply damage calculation to health and check for death (Can be used for healing by setting a negative amount)
 void Character::TakeDamage(float amount)
 {
+	CurrentHealth -= amount;
 	//Check if damage kills character
-	if ((CurrentHealth -= amount) <= 0)
+	if ((CurrentHealth) <= 0)
 	{
 		Die();
 		return;
 	}
+	//Make sure if we are healing, it never exceeds maxhealth
+	if (CurrentHealth > MaxHealth)
+	{
+		CurrentHealth = MaxHealth;
+	}
+
 	printf("Player %s health: %f\n", Icon.c_str(), CurrentHealth);
+
 }
 
 //When character dies reset values and call event
@@ -47,7 +55,7 @@ void Character::PlayTurn() {
 		printf("Player %s turn\n", Icon.c_str());
 		if (CheckCloseTargets(AttackRange)) //If target is within range, character attacks
 		{
-			Attack(target);
+			Attack();
 			return;
 		}
 		else
@@ -110,11 +118,12 @@ void Character::PlayTurn() {
 bool Character::CheckCloseTargets(int range)
 {
 	std::shared_ptr<Types::GridBox> targetBox = target->currentBox;
-	int distance = sqrt((targetBox->xIndex - currentBox->xIndex) * (targetBox->xIndex - currentBox->xIndex) + (targetBox->yIndex - currentBox->yIndex) * (targetBox->yIndex - currentBox->yIndex)); //Get the distance between character and its target
+	//Get the distance between character and its target
+	int distance = abs(targetBox->xIndex - currentBox->xIndex) + abs(targetBox->yIndex - currentBox->yIndex);
 	return distance <= range; //If distance is within range it returns true
 }
 
-void Character::Attack(std::shared_ptr<Character> target)
+void Character::Attack()
 {
 	printf("Player %s Attacked player %s\n", Icon.c_str(), target->Icon.c_str());
 	target->TakeDamage(BaseDamage * DamageMultiplier);
@@ -170,31 +179,4 @@ int Character::GetDistanceToTarget(const Character& target)
 void Character::SetEventsSystem(std::shared_ptr<Events> EventsSystem)
 {
 	eventsSystem = EventsSystem;
-}
-
-void Character::SpecialAbility()
-{
-}
-
-int Character::AddAbility(std::shared_ptr<AbilityComponent> Ability)
-{
-	if (Ability)
-	{
-		Abilities.push_back(Ability);
-		return Abilities.size() - 1;
-	}
-	return -1;
-}
-
-void Character::RemoveAbility(std::shared_ptr<AbilityComponent> Ability)
-{
-	//Remove ability from the vector
-}
-
-void Character::UseAbility(int index)
-{
-	if (index >= 0 && index < Abilities.size())
-	{
-		Abilities[index]->ActivateAbility(*this);
-	}
 }

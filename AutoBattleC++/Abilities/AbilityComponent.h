@@ -8,7 +8,9 @@ class Character;
 class AbilityComponent {
 public:
 
-	 ~AbilityComponent() = default;
-	 virtual void ActivateAbility(Character& user) {};
+	~AbilityComponent() = default;
+	virtual void ActivateAbility(Character& user) {};
+
+	int chance = 50;
 };
 #endif // !ABILITY_H

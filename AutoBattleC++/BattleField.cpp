@@ -14,14 +14,13 @@ BattleField::BattleField() {
 
 	//AllPlayers = new list<Character>(); No need to initialize
 	currentTurn = 0;
-	numberOfPossibleTiles = 0;
 
 	//Set the number of teams
-	maxTeamsCount = 3;
+	maxTeamsCount = 2;
 
 	//Can be changed to allow user input
 	//Set number of characters per team
-	charactersPerTeam = 4;
+	charactersPerTeam = 1;
 
 	//Initialize events system
 	eventsSystem = std::make_shared<Events>();
@@ -36,7 +35,7 @@ BattleField::BattleField() {
 void BattleField::Setup()
 {
 	//Setup battlefield grid width and height from player input
-	int width, height = 0;
+	int width, height;
 	while (true) //Keep looping till player inputs a correct choice
 	{
 		printf("Enter the battlefield width:\n");
@@ -54,24 +53,17 @@ void BattleField::Setup()
 
 		printf("Enter the battlefield height:\n");
 		std::cin >> height;
-		if (std::cin.fail() || height <= 0)
+		if (std::cin.fail() || height <= 0 || (width == 1 && height == 1)) //Do not allow grid of 1 x 1 since it results in 1 box
 		{
 			//Clear cin error flag
 			std::cin.clear();
 			//Ignore rest of invalid input
 			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-			printf("Please enter a number greater than 0.\n");
+			printf("Invalid grid dimensions.\n");
 			continue;
 		}
 
-		//Do not allow grid of 1 x 1 since it results in 1 box
-		if (width == 1 && height == 1)
-		{
-			printf("Battlefield cannot be 1x1. Please enter larger dimensions.\n");
-			continue;
-		}
 		grid = std::make_shared<Grid>(width, height);
-		numberOfPossibleTiles = grid->grids.size();
 		break;
 	}
 	printf("Battlefield of %d X %d created\n", width, height);

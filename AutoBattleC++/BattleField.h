@@ -6,7 +6,6 @@
 #include <vector>
 #include <iostream>
 #include "Grid.h"
-#include "Events.h"
 
 class BattleField
 {
@@ -15,7 +14,6 @@ private:
 	std::shared_ptr<Events> eventsSystem;
 
 	int currentTurn;
-	int numberOfPossibleTiles;
 
 	//Characters Setup
 	int maxTeamsCount;

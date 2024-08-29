@@ -15,7 +15,6 @@ class Character : public std::enable_shared_from_this<Character>
 {
 public:
 
-    Character();
     Character(Types::CharacterClass charcaterClass, int index, std::shared_ptr<Grid> bfieldGrid, std::string icon = "X");
     ~Character();
 
@@ -42,7 +41,7 @@ public:
 
     bool CheckCloseTargets(int range);
 
-    void Attack(std::shared_ptr<Character> target);
+    virtual void Attack();
 
     bool SetNearestTarget(const std::vector<std::shared_ptr<Character>>& potentialTargets);
 
@@ -52,22 +51,14 @@ public:
 
     void SetEventsSystem(std::shared_ptr<Events> EventsSystem);
 
-    virtual void SpecialAbility();
-
-
-    //AbilityComponents
-    int AddAbility(std::shared_ptr<AbilityComponent> Ability);
-    void RemoveAbility(std::shared_ptr<AbilityComponent> Ability);
-    void UseAbility(int index);
-
 private:
-    std::shared_ptr<Character> target;
     float MaxHealth;
     std::shared_ptr<Events> eventsSystem;
 
 protected:
     std::shared_ptr<Grid> battleFieldGrid;
-    std::vector<std::shared_ptr<AbilityComponent>> Abilities;
+    std::unique_ptr<AbilityComponent> Ability;
+    std::shared_ptr<Character> target;
 
 };
 #endif // !CHARACTER_H
