@@ -1,7 +1,10 @@
-#pragma once
+#ifndef GRID_H
+#define GRID_H
+
 #include <Vector>
 #include "Types.h"
 #include <memory>
+
 class Grid
 {
 
@@ -20,4 +23,5 @@ public:
 
     int GetBoxIndexByLocation(int x, int y);
 };
+#endif // !GRID_H
 

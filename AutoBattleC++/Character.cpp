@@ -26,7 +26,7 @@ void Character::TakeDamage(float amount)
 }
 
 
-//When character dies reset values and notify battlefield
+//When character dies reset values and call event
 void Character::Die()
 {
 	CurrentHealth = 0;
@@ -85,6 +85,7 @@ void Character::PlayTurn(std::shared_ptr<Grid> battlefieldGrid) {
 
 			if (newBoxX >= 0 && newBoxX < battlefieldGrid->xLength && newBoxY >= 0 && newBoxY < battlefieldGrid->yLength)
 			{
+				//TODO: Make them a little smarter, check for direction of target and move around blocked box in that direction
 				//Get index of next horizontal and vertical boxes to character => towards its target
 				int horizontalBoxIndex = battlefieldGrid->GetBoxIndexByLocation(newBoxX, currentBox->yIndex);
 				int verticalBoxIndex = battlefieldGrid->GetBoxIndexByLocation(currentBox->xIndex, newBoxY);

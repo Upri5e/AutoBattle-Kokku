@@ -145,7 +145,7 @@ void BattleField::CreateGameCharacters(int playerClassIndex)
 			if (availableLocations.empty())
 			{
 				printf("No available locations left for character %s!\n", currentMember->Icon.c_str());
-				RemoveTeamMember(currentMember);
+				RemoveMemberFromTeam(currentMember);
 				continue;
 			}
 
@@ -237,7 +237,7 @@ void BattleField::RemoveTeam(std::shared_ptr<Types::Team> team)
 	}
 }
 
-void BattleField::RemoveTeamMember(std::shared_ptr<Character> member)
+void BattleField::RemoveMemberFromTeam(std::shared_ptr<Character> member)
 {
 	//Remove member from its team
 	auto team = member->currentTeam;
@@ -259,7 +259,7 @@ void BattleField::OnCharacterDeath(const std::shared_ptr<Character>& character)
 	if (i != AllPlayers.end())
 	{
 		auto characterToRemove = *i;
-		RemoveTeamMember(characterToRemove);
+		RemoveMemberFromTeam(characterToRemove);
 	}
 	grid->drawBattlefield();
 }

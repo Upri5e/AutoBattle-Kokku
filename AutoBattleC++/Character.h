@@ -1,4 +1,6 @@
-#pragma once
+#ifndef CHARACTER_H
+#define CHARACTER_H
+
 #include <memory>
 #include <vector>
 #include "Types.h"
@@ -54,4 +56,4 @@ private:
     float MaxHealth;
     std::shared_ptr<Events> eventsSystem;
 };
-
+#endif // !CHARACTER_H

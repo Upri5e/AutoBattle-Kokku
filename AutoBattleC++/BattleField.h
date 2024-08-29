@@ -27,7 +27,7 @@ private:
 
 	void RemoveTeam(std::shared_ptr<Types::Team> team);
 
-	void RemoveTeamMember(std::shared_ptr<Character> member);
+	void RemoveMemberFromTeam(std::shared_ptr<Character> member);
 
 public:
 

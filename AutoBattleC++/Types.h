@@ -1,4 +1,6 @@
-#pragma once
+#ifndef TYPES_H
+#define TYPES_H
+
 #include <string>
 #include <memory>
 #include <vector>
@@ -90,3 +92,4 @@ public:
         }
     }
 };
+#endif // !TYPES_H
