@@ -1,9 +1,10 @@
 #include "Character.h"
 #include <math.h>
 //using namespace std;
+#include "Abilities/AbilityComponent.h"
 
-Character::Character(Types::CharacterClass charClass, int index, std::string icon)
-	: PlayerIndex(index), MaxHealth(100), BaseDamage(50), DamageMultiplier(1), Icon(icon), IsDead(false), AttackRange(1)
+Character::Character(Types::CharacterClass charClass, int index, std::shared_ptr<Grid> bfieldGrid, std::string icon)
+	: PlayerIndex(index), MaxHealth(100), BaseDamage(50), DamageMultiplier(1), Icon(icon), IsDead(false), AttackRange(1), battleFieldGrid(bfieldGrid)
 {
 	CurrentHealth = MaxHealth;
 }
@@ -25,7 +26,6 @@ void Character::TakeDamage(float amount)
 	printf("Player %s health: %f\n", Icon.c_str(), CurrentHealth);
 }
 
-
 //When character dies reset values and call event
 void Character::Die()
 {
@@ -38,15 +38,14 @@ void Character::Die()
 		eventsSystem->NotifyCharacterDeath(shared_from_this());
 }
 
-
 //character plays there turn
 //Check if their target is in range, they attack
 //If not they move towards their target
-void Character::PlayTurn(std::shared_ptr<Grid> battlefieldGrid) {
+void Character::PlayTurn() {
 	if (target && !target->IsDead)
 	{
 		printf("Player %s turn\n", Icon.c_str());
-		if (CheckCloseTargets(battlefieldGrid, AttackRange)) //If target is within range, character attacks
+		if (CheckCloseTargets(AttackRange)) //If target is within range, character attacks
 		{
 			Attack(target);
 			return;
@@ -83,17 +82,17 @@ void Character::PlayTurn(std::shared_ptr<Grid> battlefieldGrid) {
 				}
 			}
 
-			if (newBoxX >= 0 && newBoxX < battlefieldGrid->xLength && newBoxY >= 0 && newBoxY < battlefieldGrid->yLength)
+			if (newBoxX >= 0 && newBoxX < battleFieldGrid->xLength && newBoxY >= 0 && newBoxY < battleFieldGrid->yLength)
 			{
 				//TODO: Make them a little smarter, check for direction of target and move around blocked box in that direction
 				//Get index of next horizontal and vertical boxes to character => towards its target
-				int horizontalBoxIndex = battlefieldGrid->GetBoxIndexByLocation(newBoxX, currentBox->yIndex);
-				int verticalBoxIndex = battlefieldGrid->GetBoxIndexByLocation(currentBox->xIndex, newBoxY);
+				int horizontalBoxIndex = battleFieldGrid->GetBoxIndexByLocation(newBoxX, currentBox->yIndex);
+				int verticalBoxIndex = battleFieldGrid->GetBoxIndexByLocation(currentBox->xIndex, newBoxY);
 
 				//Set the index based on whether first box is occupied or not
-				int resultBoxIndex = battlefieldGrid->grids[horizontalBoxIndex]->GetOccupied() ? verticalBoxIndex : horizontalBoxIndex;
+				int resultBoxIndex = battleFieldGrid->grids[horizontalBoxIndex]->GetOccupied() ? verticalBoxIndex : horizontalBoxIndex;
 
-				auto newBox = battlefieldGrid->grids[resultBoxIndex];
+				auto newBox = battleFieldGrid->grids[resultBoxIndex];
 
 				//Check if the chosen box is not occupied so character can occupy it
 				if (!newBox->GetOccupied())
@@ -101,14 +100,14 @@ void Character::PlayTurn(std::shared_ptr<Grid> battlefieldGrid) {
 					currentBox->SetOccupy(false, " ");
 					currentBox = newBox;
 					currentBox->SetOccupy(true, Icon);
-					battlefieldGrid->drawBattlefield();
+					battleFieldGrid->drawBattlefield();
 				}
 			}
 		}
 	}
 }
 
-bool Character::CheckCloseTargets(std::shared_ptr<Grid> battlefield, int range)
+bool Character::CheckCloseTargets(int range)
 {
 	std::shared_ptr<Types::GridBox> targetBox = target->currentBox;
 	int distance = sqrt((targetBox->xIndex - currentBox->xIndex) * (targetBox->xIndex - currentBox->xIndex) + (targetBox->yIndex - currentBox->yIndex) * (targetBox->yIndex - currentBox->yIndex)); //Get the distance between character and its target
@@ -121,11 +120,11 @@ void Character::Attack(std::shared_ptr<Character> target)
 	target->TakeDamage(BaseDamage * DamageMultiplier);
 }
 
-bool Character::SetNearestTarget(const std::vector<std::shared_ptr<Character>>& potentialTargets, const std::shared_ptr<Grid>& battlefieldGrid)
+bool Character::SetNearestTarget(const std::vector<std::shared_ptr<Character>>& potentialTargets)
 {
 	//Search for a target around an expanding radius
 	std::shared_ptr<Character> nearestTarget = nullptr;
-	int maxRadius = sqrt((battlefieldGrid->xLength * battlefieldGrid->xLength) + (battlefieldGrid->yLength * battlefieldGrid->yLength));
+	int maxRadius = sqrt((battleFieldGrid->xLength * battleFieldGrid->xLength) + (battleFieldGrid->yLength * battleFieldGrid->yLength));
 	int closestDistance = maxRadius;
 
 	for (int radius = 1; radius <= maxRadius; radius++) //Increase radius with every iteration
@@ -162,7 +161,6 @@ std::shared_ptr<Character> Character::GetTarget()
 	return target;
 }
 
-
 int Character::GetDistanceToTarget(const Character& target)
 {
 	std::shared_ptr<Types::GridBox> targetBox = target.currentBox;
@@ -174,3 +172,29 @@ void Character::SetEventsSystem(std::shared_ptr<Events> EventsSystem)
 	eventsSystem = EventsSystem;
 }
 
+void Character::SpecialAbility()
+{
+}
+
+int Character::AddAbility(std::shared_ptr<AbilityComponent> Ability)
+{
+	if (Ability)
+	{
+		Abilities.push_back(Ability);
+		return Abilities.size() - 1;
+	}
+	return -1;
+}
+
+void Character::RemoveAbility(std::shared_ptr<AbilityComponent> Ability)
+{
+	//Remove ability from the vector
+}
+
+void Character::UseAbility(int index)
+{
+	if (index >= 0 && index < Abilities.size())
+	{
+		Abilities[index]->ActivateAbility(*this);
+	}
+}

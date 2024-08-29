@@ -6,17 +6,17 @@
 #include "Types.h"
 #include "Grid.h"
 #include <string>
-#include "BattleField.h"
 #include "Events.h"
 
-class BattleField;
+class AbilityComponent;
 
 //Inherit from enable shared from this to allow creating a temporary shared ptr from the weak ptr when we want to notify battlefield on death
 class Character : public std::enable_shared_from_this<Character>
 {
 public:
 
-    Character(Types::CharacterClass charcaterClass, int index, std::string icon = "X");
+    Character();
+    Character(Types::CharacterClass charcaterClass, int index, std::shared_ptr<Grid> bfieldGrid, std::string icon = "X");
     ~Character();
 
     
@@ -38,22 +38,36 @@ public:
 
     void Die();
 
-    void PlayTurn(std::shared_ptr<Grid> battlefieldGrid);
+    virtual void PlayTurn();
 
-    bool CheckCloseTargets(std::shared_ptr<Grid> battlefieldGrid, int range);
+    bool CheckCloseTargets(int range);
 
     void Attack(std::shared_ptr<Character> target);
 
-    bool SetNearestTarget(const std::vector<std::shared_ptr<Character>>& potentialTargets, const std::shared_ptr<Grid>& battlefieldGrid);
+    bool SetNearestTarget(const std::vector<std::shared_ptr<Character>>& potentialTargets);
 
     std::shared_ptr<Character> GetTarget();
 
     int GetDistanceToTarget(const Character& target);
 
     void SetEventsSystem(std::shared_ptr<Events> EventsSystem);
+
+    virtual void SpecialAbility();
+
+
+    //AbilityComponents
+    int AddAbility(std::shared_ptr<AbilityComponent> Ability);
+    void RemoveAbility(std::shared_ptr<AbilityComponent> Ability);
+    void UseAbility(int index);
+
 private:
-    std::shared_ptr<Character> target; //Change to shared ptr to avoid memory leak
+    std::shared_ptr<Character> target;
     float MaxHealth;
     std::shared_ptr<Events> eventsSystem;
+
+protected:
+    std::shared_ptr<Grid> battleFieldGrid;
+    std::vector<std::shared_ptr<AbilityComponent>> Abilities;
+
 };
 #endif // !CHARACTER_H

@@ -143,12 +143,18 @@
     <ClCompile Include="BattleField.cpp" />
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="Grid.cpp" />
+    <ClCompile Include="Abilities\KnockBackAbility.cpp" />
+    <ClCompile Include="Paladin.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Abilities\AbilityComponent.h" />
     <ClInclude Include="BattleField.h" />
     <ClInclude Include="Character.h" />
+    <ClInclude Include="CharacterFactory.h" />
     <ClInclude Include="Events.h" />
     <ClInclude Include="Grid.h" />
+    <ClInclude Include="Abilities\KnockBackAbility.h" />
+    <ClInclude Include="Paladin.h" />
     <ClInclude Include="Types.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

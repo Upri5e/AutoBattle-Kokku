@@ -5,6 +5,7 @@
 #include <iostream>
 #include <list>
 #include <string>
+#include "CharacterFactory.h"
 
 //using namespace std; Bad practice
 
@@ -21,7 +22,6 @@ BattleField::BattleField() {
 	//Can be changed to allow user input
 	//Set number of characters per team
 	charactersPerTeam = 4;
-	//Setup();
 
 	//Initialize events system
 	eventsSystem = std::make_shared<Events>();
@@ -109,6 +109,9 @@ void BattleField::CreateGameCharacters(int playerClassIndex)
 	bool playerCreated = false;
 	//Create the gridbox cache for available locations to filter out the occupied ones
 	std::vector<std::shared_ptr<Types::GridBox>> availableLocations = grid->grids;
+
+	std::string memberIcon = "";
+	Types::CharacterClass CharClass = Types::CharacterClass::Paladin;
 	// Loop through the teams (can be changed to take user input for number of teams)
 	for (int i = 0; i < maxTeamsCount; i++)
 	{
@@ -121,22 +124,20 @@ void BattleField::CreateGameCharacters(int playerClassIndex)
 			if (!playerCreated)
 			{
 				//Cast the chosen index to the character class enum
-				Types::CharacterClass characterClass = static_cast<Types::CharacterClass>(playerClassIndex);
-				printf("Player Class Choice: %s\n", Types::GetCharacterClassName(characterClass));
-				std::string playerIcon = "A"; //Player icon is always A
-				currentMember = std::make_shared<Character>(characterClass, currentIndex, playerIcon);
-				printf("Player %s created!\n", currentMember->Icon.c_str());
+				CharClass = static_cast<Types::CharacterClass>(playerClassIndex);
+				printf("Player Class Choice: %s\n", Types::GetCharacterClassName(CharClass));
+				memberIcon = "A"; //Player icon is always A
 				playerCreated = true;
 			}
 			else
 			{
 				int randomInteger = GetRandomInt(1, 4);
-				Types::CharacterClass botClass = static_cast<Types::CharacterClass>(randomInteger); //Safer casting with static to ensure value is not out of range
-				printf("Enemy Class Choice: %s\n", Types::GetCharacterClassName(botClass));
-				std::string memberIcon = std::string(1, Teams[i]->teamIcon) + char('A' + i * charactersPerTeam + j); // Members icon is the team icon + next letter
-				currentMember = std::make_shared<Character>(botClass, currentIndex, memberIcon);
+				CharClass = static_cast<Types::CharacterClass>(randomInteger); //Safer casting with static to ensure value is not out of range
+				printf("Enemy Class Choice: %s\n", Types::GetCharacterClassName(CharClass));
+				memberIcon = std::string(1, Teams[i]->teamIcon) + char('A' + i * charactersPerTeam + j); // Members icon is the team icon + next letter
 			}
 
+			currentMember = CharacterFactory::CreateCharacter(CharClass, currentIndex, grid, memberIcon);
 			Teams[i]->AddMember(currentMember);
 			currentMember->currentTeam = Teams[i];
 			currentMember->SetEventsSystem(eventsSystem); //Set eventsystem in characters
@@ -171,7 +172,7 @@ void BattleField::StartGame()
 		{
 			if (member->GetTarget())
 				continue;
-			member->SetNearestTarget(Teams[enemyTeamIndex]->TeamMembers, grid);
+			member->SetNearestTarget(Teams[enemyTeamIndex]->TeamMembers);
 		}
 	}
 	printf("Game Started...Have Fun!\n");
@@ -197,11 +198,11 @@ void BattleField::PlayTurn() {
 		auto playerTarget = player->GetTarget();
 		if (!playerTarget || playerTarget->IsDead)
 		{
-			if (!player->SetNearestTarget(AllPlayers, grid)) {
+			if (!player->SetNearestTarget(AllPlayers)) {
 				break;
 			}
 		}
-		player->PlayTurn(grid);
+		player->PlayTurn();
 		i++;
 	}
 	//Handle end of turn checks
