@@ -3,8 +3,6 @@
 #include "Types.h"
 #include "Character.h"
 #include <iostream>
-#include <list>
-#include <string>
 #include "CharacterFactory.h"
 
 //using namespace std; Bad practice
@@ -157,6 +155,7 @@ void BattleField::CreateGameCharacters(int playerClassIndex)
 
 void BattleField::StartGame()
 {
+	//Go through all characters and set their targets
 	for (int i = 0; i < Teams.size(); i++)
 	{
 		int enemyTeamIndex = (i + 1) % Teams.size();
@@ -167,6 +166,10 @@ void BattleField::StartGame()
 			member->SetNearestTarget(Teams[enemyTeamIndex]->TeamMembers);
 		}
 	}
+
+	//Shuffle all players to start randomly
+	random_shuffle(std::begin(AllPlayers), std::end(AllPlayers));
+
 	printf("Game Started...Have Fun!\n");
 	grid->drawBattlefield();
 	PlayTurn();
