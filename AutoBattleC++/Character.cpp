@@ -40,6 +40,8 @@ void Character::TakeDamage(float amount)
 void Character::Die()
 {
 	CurrentHealth = 0;
+	canBeAttacked = false;
+	canBeChased = false;
 	IsDead = true;
 	currentBox->SetOccupy(false, " ");
 

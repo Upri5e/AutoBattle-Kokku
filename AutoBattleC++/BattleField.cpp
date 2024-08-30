@@ -188,10 +188,21 @@ void BattleField::PlayTurn() {
 			continue;
 		}
 		auto playerTarget = player->GetTarget();
-		if (!playerTarget || playerTarget->IsDead || !playerTarget->canBeChased) //Added check for if target can be chased
+		if (!playerTarget || playerTarget->IsDead) //Added check for if target can be chased
 		{
 			if (!player->SetNearestTarget(AllPlayers)) {
 				break;
+			}
+		}
+
+		if (!playerTarget->canBeChased) //if target is still alive but cannot be chased
+		{
+			auto cachedPlayers = AllPlayers; //cache in all players
+			auto it = std::find(cachedPlayers.begin(), cachedPlayers.end(), playerTarget);
+			if (it != cachedPlayers.end())
+			{
+				cachedPlayers.erase(it); //remove the target that we cannot chase from the cached players
+				player->SetNearestTarget(cachedPlayers); //search for a new target
 			}
 		}
 		player->PlayTurn();

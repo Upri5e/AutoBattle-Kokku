@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Archer.cpp" />
     <ClCompile Include="AutoBattleC++.cpp" />
     <ClCompile Include="BattleField.cpp" />
     <ClCompile Include="Character.cpp" />
@@ -147,9 +148,12 @@
     <ClCompile Include="Abilities\KnockBackAbility.cpp" />
     <ClCompile Include="Abilities\InvisibilityAbility.cpp" />
     <ClCompile Include="Paladin.cpp" />
+    <ClCompile Include="Abilities\ThrowRockAbility.cpp" />
+    <ClCompile Include="Warrior.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Abilities\AbilityComponent.h" />
+    <ClInclude Include="Archer.h" />
     <ClInclude Include="BattleField.h" />
     <ClInclude Include="Character.h" />
     <ClInclude Include="CharacterFactory.h" />
@@ -159,7 +163,9 @@
     <ClInclude Include="Abilities\KnockBackAbility.h" />
     <ClInclude Include="Abilities\InvisibilityAbility.h" />
     <ClInclude Include="Paladin.h" />
+    <ClInclude Include="Abilities\ThrowRockAbility.h" />
     <ClInclude Include="Types.h" />
+    <ClInclude Include="Warrior.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

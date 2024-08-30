@@ -6,6 +6,8 @@
 #include "Character.h"
 #include "Paladin.h"
 #include "Cleric.h"
+#include "Warrior.h"
+#include "Archer.h"
 
 class CharacterFactory {
 public:
@@ -18,7 +20,9 @@ public:
 		case Types::Cleric:
 			return std::make_shared<Cleric>(index, bfieldGrid, icon);
 		case Types::Warrior:
+			return std::make_shared<Warrior>(index, bfieldGrid, icon);
 		case Types::Archer:
+			return std::make_shared<Archer>(index, bfieldGrid, icon);
 		default:
 			return std::make_shared<Character>(charClass, index, bfieldGrid, icon);
 		}
