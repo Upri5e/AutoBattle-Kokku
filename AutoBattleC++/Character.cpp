@@ -63,63 +63,66 @@ void Character::PlayTurn() {
 			Attack();
 			return;
 		}
-		else
-		{
-			// if there is no target close enough, calculates in wich direction this character should move to be closer to a possible target
-			int newBoxX = currentBox->xIndex;
-			int newBoxY = currentBox->yIndex;
 
-			//We check target position compared to player on X and store the movement to that direction accordingly
-			if (currentBox->xIndex != target->currentBox->xIndex)
-			{
-				if (currentBox->xIndex > target->currentBox->xIndex)
-				{
-					newBoxX--;
-				}
-				else if (currentBox->xIndex < target->currentBox->xIndex)
-				{
-					newBoxX++;
-				}
-			}
+		Move();
 
-			if (currentBox->yIndex != target->currentBox->yIndex)
-			{
-				//We check target position compared to player on Y
-				if (currentBox->yIndex > target->currentBox->yIndex)
-				{
-					newBoxY--;
-				}
-				else if (currentBox->yIndex < target->currentBox->yIndex)
-				{
-					newBoxY++;
-				}
-			}
-
-			if (newBoxX >= 0 && newBoxX < battleFieldGrid->xLength && newBoxY >= 0 && newBoxY < battleFieldGrid->yLength)
-			{
-				//TODO: Make them a little smarter, check for direction of target and move around blocked box in that direction
-				//Get index of next horizontal and vertical boxes to character => towards its target
-				int horizontalBoxIndex = battleFieldGrid->GetBoxIndexByLocation(newBoxX, currentBox->yIndex);
-				int verticalBoxIndex = battleFieldGrid->GetBoxIndexByLocation(currentBox->xIndex, newBoxY);
-
-				//Set the index based on whether first box is occupied or not
-				int resultBoxIndex = battleFieldGrid->grids[horizontalBoxIndex]->GetOccupied() ? verticalBoxIndex : horizontalBoxIndex;
-
-				auto newBox = battleFieldGrid->grids[resultBoxIndex];
-
-				//Check if the chosen box is not occupied so character can occupy it
-				if (!newBox->GetOccupied())
-				{
-					currentBox->SetOccupy(false, " ");
-					currentBox = newBox;
-					currentBox->SetOccupy(true, Icon);
-					battleFieldGrid->drawBattlefield();
-				}
-			}
-		}
 	}
 }
 
+void Character::Move()
+{
+	// if there is no target close enough, calculates in wich direction this character should move to be closer to a possible target
+	int newBoxX = currentBox->xIndex;
+	int newBoxY = currentBox->yIndex;
+
+	//We check target position compared to player on X and store the movement to that direction accordingly
+	if (currentBox->xIndex != target->currentBox->xIndex)
+	{
+		if (currentBox->xIndex > target->currentBox->xIndex)
+		{
+			newBoxX--;
+		}
+		else if (currentBox->xIndex < target->currentBox->xIndex)
+		{
+			newBoxX++;
+		}
+	}
+
+	if (currentBox->yIndex != target->currentBox->yIndex)
+	{
+		//We check target position compared to player on Y
+		if (currentBox->yIndex > target->currentBox->yIndex)
+		{
+			newBoxY--;
+		}
+		else if (currentBox->yIndex < target->currentBox->yIndex)
+		{
+			newBoxY++;
+		}
+	}
+
+	if (newBoxX >= 0 && newBoxX < battleFieldGrid->xLength && newBoxY >= 0 && newBoxY < battleFieldGrid->yLength)
+	{
+		//TODO: Make them a little smarter, check for direction of target and move around blocked box in that direction
+		//Get index of next horizontal and vertical boxes to character => towards its target
+		int horizontalBoxIndex = battleFieldGrid->GetBoxIndexByLocation(newBoxX, currentBox->yIndex);
+		int verticalBoxIndex = battleFieldGrid->GetBoxIndexByLocation(currentBox->xIndex, newBoxY);
+
+		//Set the index based on whether first box is occupied or not
+		int resultBoxIndex = battleFieldGrid->grids[horizontalBoxIndex]->GetOccupied() ? verticalBoxIndex : horizontalBoxIndex;
+
+		auto newBox = battleFieldGrid->grids[resultBoxIndex];
+
+		//Check if the chosen box is not occupied so character can occupy it
+		if (!newBox->GetOccupied())
+		{
+			currentBox->SetOccupy(false, " ");
+			currentBox = newBox;
+			currentBox->SetOccupy(true, Icon);
+			battleFieldGrid->drawBattlefield();
+		}
+	}
+}
 bool Character::CheckCloseTargets(int range)
 {
 	std::shared_ptr<Types::GridBox> targetBox = target->currentBox;

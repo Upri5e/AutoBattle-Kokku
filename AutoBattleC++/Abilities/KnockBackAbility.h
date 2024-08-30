@@ -8,9 +8,9 @@ class KnockBackAbility : public AbilityComponent
 {
 private:
 	int knockBackDistance;
-	std::shared_ptr<Grid> grid;
+	std::weak_ptr<Grid> grid;
 
-	void GetLocAfterKnockback(Character& user, int knockBackDist, int& newX, int& newY);
+	void GetLocAfterKnockback(std::shared_ptr <Character> user, int knockBackDist, int& newX, int& newY);
 public:
 
 	KnockBackAbility(int tiles, std::shared_ptr<Grid> battleFieldGrid);

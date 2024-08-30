@@ -33,15 +33,15 @@ public:
 
     std::shared_ptr<Types::GridBox> currentBox;
 
-    void TakeDamage(float amount);
-
-    void Die();
-
-    virtual void PlayTurn();
-
-    bool CheckCloseTargets(int range);
 
     virtual void Attack();
+    virtual void Move();
+    virtual void PlayTurn();
+
+
+    void TakeDamage(float amount);
+    void Die();
+    bool CheckCloseTargets(int range);
 
     bool SetNearestTarget(const std::vector<std::shared_ptr<Character>>& potentialTargets);
 
@@ -50,6 +50,7 @@ public:
     int GetDistanceToTarget(const Character& target);
 
     void SetEventsSystem(std::shared_ptr<Events> EventsSystem);
+
 
     bool canBeAttacked;
     bool canBeChased;

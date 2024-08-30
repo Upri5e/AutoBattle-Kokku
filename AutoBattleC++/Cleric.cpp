@@ -5,9 +5,7 @@
 Cleric::Cleric(int index, std::shared_ptr<Grid> bfieldGrid, std::string icon)
 	:Character(Types::Cleric, index, bfieldGrid, icon)
 {
-	srand(time(NULL)); //Seed random number generator
 	Ability = std::make_unique<InvisibilityAbility>(1);
-	Ability->chance = 100;
 }
 
 Cleric::~Cleric()

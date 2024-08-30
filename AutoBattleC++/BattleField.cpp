@@ -16,7 +16,7 @@ BattleField::BattleField() {
 	currentTurn = 0;
 
 	//Set the number of teams
-	maxTeamsCount = 2;
+	maxTeamsCount = 5;
 
 	//Can be changed to allow user input
 	//Set number of characters per team

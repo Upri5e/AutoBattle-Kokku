@@ -149,6 +149,7 @@
     <ClCompile Include="Abilities\InvisibilityAbility.cpp" />
     <ClCompile Include="Paladin.cpp" />
     <ClCompile Include="Abilities\ThrowRockAbility.cpp" />
+    <ClCompile Include="Abilities\TeleportAbility.cpp" />
     <ClCompile Include="Warrior.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -164,6 +165,7 @@
     <ClInclude Include="Abilities\InvisibilityAbility.h" />
     <ClInclude Include="Paladin.h" />
     <ClInclude Include="Abilities\ThrowRockAbility.h" />
+    <ClInclude Include="Abilities\TeleportAbility.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="Warrior.h" />
   </ItemGroup>

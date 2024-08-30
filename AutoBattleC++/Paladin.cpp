@@ -7,9 +7,6 @@ Paladin::Paladin(int index, std::shared_ptr<Grid> bfieldGrid, std::string icon)
 {
 	//Add the knockback ability to paladin
 	Ability = std::make_unique<KnockBackAbility>(KnockbackDistance, battleFieldGrid);
-	srand(time(NULL)); //Seed random number generator
-
-	Ability->chance = 100;
 }
 
 Paladin::~Paladin()
