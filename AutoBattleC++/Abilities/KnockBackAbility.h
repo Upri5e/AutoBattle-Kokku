@@ -15,7 +15,7 @@ public:
 
 	KnockBackAbility(int tiles, std::shared_ptr<Grid> battleFieldGrid);
 
-	void ActivateAbility(Character& user) override;
+	void ActivateAbility(std::shared_ptr <Character> user) override;
 };
 
 #endif // !KNOCKBACKABILITY_H

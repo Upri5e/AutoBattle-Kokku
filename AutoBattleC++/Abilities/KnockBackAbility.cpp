@@ -4,9 +4,9 @@
 KnockBackAbility::KnockBackAbility(int tiles, std::shared_ptr<Grid> battleFieldGrid) : knockBackDistance(tiles), grid(battleFieldGrid)
 {
 }
-void KnockBackAbility::ActivateAbility(Character& user)
+void KnockBackAbility::ActivateAbility(std::shared_ptr <Character> user)
 {
-	auto target = user.GetTarget();
+	auto target = user->GetTarget();
 
 	if (target && !target->IsDead)
 	{
@@ -16,7 +16,7 @@ void KnockBackAbility::ActivateAbility(Character& user)
 		
 		while (localKnockDistance > 0) //Loop untill we cannot knock the character back anymore
 		{
-			GetLocAfterKnockback(user, localKnockDistance, newX, newY); //Get the new location based on the current knockback distance
+			GetLocAfterKnockback(*user, localKnockDistance, newX, newY); //Get the new location based on the current knockback distance
 
 			if (newX >= 0 && newX < grid->xLength && newY >= 0 && newY < grid->yLength) //in bound of grid
 			{

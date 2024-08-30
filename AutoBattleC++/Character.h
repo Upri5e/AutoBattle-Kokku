@@ -51,6 +51,9 @@ public:
 
     void SetEventsSystem(std::shared_ptr<Events> EventsSystem);
 
+    bool canBeAttacked;
+    bool canBeChased;
+
 private:
     float MaxHealth;
     std::shared_ptr<Events> eventsSystem;
@@ -59,6 +62,5 @@ protected:
     std::shared_ptr<Grid> battleFieldGrid;
     std::unique_ptr<AbilityComponent> Ability;
     std::shared_ptr<Character> target;
-
 };
 #endif // !CHARACTER_H

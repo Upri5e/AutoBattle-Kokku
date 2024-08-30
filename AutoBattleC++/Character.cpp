@@ -7,6 +7,8 @@ Character::Character(Types::CharacterClass charClass, int index, std::shared_ptr
 	: PlayerIndex(index), MaxHealth(100), BaseDamage(50), DamageMultiplier(1), Icon(icon), IsDead(false), AttackRange(1), battleFieldGrid(bfieldGrid)
 {
 	CurrentHealth = MaxHealth;
+	canBeAttacked = true;
+	canBeChased = true;
 }
 
 Character::~Character()
@@ -49,11 +51,12 @@ void Character::Die()
 //character plays there turn
 //Check if their target is in range, they attack
 //If not they move towards their target
+
 void Character::PlayTurn() {
-	if (target && !target->IsDead)
+	if (target && !target->IsDead && target->canBeChased)
 	{
 		printf("Player %s turn\n", Icon.c_str());
-		if (CheckCloseTargets(AttackRange)) //If target is within range, character attacks
+		if (CheckCloseTargets(AttackRange) && target->canBeAttacked) //If target is within range, character attacks
 		{
 			Attack();
 			return;
@@ -140,7 +143,7 @@ bool Character::SetNearestTarget(const std::vector<std::shared_ptr<Character>>& 
 	{
 		for (auto Target : potentialTargets)//iterate through potential target and get the distance to character
 		{
-			if (Target->currentTeam->teamIndex == currentTeam->teamIndex)
+			if (Target->currentTeam->teamIndex == currentTeam->teamIndex || !Target->canBeChased) //Add check for if target cant be chased
 				continue;
 
 			int thisDistance = GetDistanceToTarget(*Target);

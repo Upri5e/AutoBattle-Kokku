@@ -142,8 +142,10 @@
     <ClCompile Include="AutoBattleC++.cpp" />
     <ClCompile Include="BattleField.cpp" />
     <ClCompile Include="Character.cpp" />
+    <ClCompile Include="Cleric.cpp" />
     <ClCompile Include="Grid.cpp" />
     <ClCompile Include="Abilities\KnockBackAbility.cpp" />
+    <ClCompile Include="Abilities\InvisibilityAbility.cpp" />
     <ClCompile Include="Paladin.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -151,9 +153,11 @@
     <ClInclude Include="BattleField.h" />
     <ClInclude Include="Character.h" />
     <ClInclude Include="CharacterFactory.h" />
+    <ClInclude Include="Cleric.h" />
     <ClInclude Include="Events.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="Abilities\KnockBackAbility.h" />
+    <ClInclude Include="Abilities\InvisibilityAbility.h" />
     <ClInclude Include="Paladin.h" />
     <ClInclude Include="Types.h" />
   </ItemGroup>

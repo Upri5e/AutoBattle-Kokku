@@ -188,7 +188,7 @@ void BattleField::PlayTurn() {
 			continue;
 		}
 		auto playerTarget = player->GetTarget();
-		if (!playerTarget || playerTarget->IsDead)
+		if (!playerTarget || playerTarget->IsDead || !playerTarget->canBeChased) //Added check for if target can be chased
 		{
 			if (!player->SetNearestTarget(AllPlayers)) {
 				break;

@@ -29,7 +29,7 @@ void Paladin::Attack()
 	if (random < Ability->chance)
 	{
 		printf("%s knocked %s back\n", Icon.c_str(), GetTarget()->Icon.c_str());
-		Ability->ActivateAbility(*this); //activate the ability
+		Ability->ActivateAbility(shared_from_this()); //activate the ability
 	}
 }
 
